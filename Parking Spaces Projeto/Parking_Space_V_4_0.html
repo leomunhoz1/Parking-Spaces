@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Parking Spaces – Gestão Inteligente de Estacionamento"/>
+<title>Parking Spaces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+ul{list-style:none}
+
+:root{
+  --bg:#FAFAF9;--bg2:#F4F3F0;--bg3:#ECEAE5;
+  --ink:#0A0A0A;--ink2:#3D3D3D;--ink3:#8A8A8A;--ink4:#C4C4C4;
+  --blue:#0066FF;--blue-dk:#0052CC;--blue-bg:#EEF4FF;
+  --green:#16A34A;--red:#DC2626;--amber:#D97706;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',system-ui,sans-serif;
+  --r:10px;--ease:cubic-bezier(.4,0,.2,1);
+}
+
+body.dark{
+  --bg:#0A0A0A;--bg2:#141414;--bg3:#262626;
+  --ink:#FAFAF9;--ink2:#E7E5E4;--ink3:#A8A29E;--ink4:#525252;
+  --blue-bg:#002266;
+}
+body.dark .nav,body.dark .pg,body.dark .form-box,body.dark .prod-mockup,body.dark .plan-card,body.dark .plan{background:#141414!important}
+body.dark .mock-body{background:#1A1A1A!important}
+body.dark .mock-item.active{background:rgba(255,255,255,.15)}
+body.dark .prod-step.active{background:#141414}
+body.dark .logo svg rect{fill:#141414!important;stroke:var(--bg3);stroke-width:1px}
+body.dark .logo svg path[fill="white"],body.dark .logo svg path[opacity=".9"]{fill:#FAFAF9!important}
+body.dark .logo svg path[fill="var(--ink)"],body.dark .logo svg circle[fill="var(--ink)"]{fill:#FAFAF9!important}
+body.dark footer,body.dark .footer{background:#141414!important;border-top:1px solid #262626!important}
+body.dark footer a,body.dark .footer a{color:#A8A29E!important}
+body.dark footer a:hover,body.dark .footer a:hover{color:#FAFAF9!important}
+body.dark footer p,body.dark footer span,body.dark .footer p,body.dark .footer span,body.dark .footer-copy{color:#525252!important}
+body.dark .test-avatar{background:#1E1E1E;color:#FAFAF9;border:1px solid #262626}
+body.dark .phone-mockup{border-color:#000;background:#000}
+
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--bg2);border:1px solid var(--bg3);color:var(--ink);font-size:16px;transition:all .2s var(--ease)}
+.theme-toggle:hover{background:var(--bg3);transform:scale(1.05)}
+@media(min-width:821px){
+  .nav-inner{position:relative;width:100%}
+  .nav-inner .theme-toggle{position:absolute;right:32px;top:50%;transform:translateY(-50%)}
+  .nav-inner .theme-toggle:hover{transform:translateY(-50%) scale(1.05)}
+}
+@media(max-width:820px){.nav-inner .theme-toggle{display:none}}
+
+body{font-family:var(--sans);font-size:16px;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 32px}
+
+.sr{opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.sr.on{opacity:1;transform:none}
+
+.display{font-family:var(--serif);font-size:clamp(48px,7vw,88px);font-weight:400;line-height:1;letter-spacing:-.02em;color:var(--ink)}
+.display em{font-style:italic;color:var(--blue)}
+.h2{font-family:var(--serif);font-size:clamp(32px,4.5vw,58px);font-weight:400;line-height:1.08;letter-spacing:-.018em}
+.h3{font-family:var(--sans);font-size:17px;font-weight:500;line-height:1.3;letter-spacing:-.01em}
+.label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.body-lg{font-size:18px;line-height:1.7;color:var(--ink2);font-weight:300}
+.body{font-size:15px;line-height:1.7;color:var(--ink3);font-weight:300}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:7px;font-size:14px;font-weight:500;transition:all .22s var(--ease);white-space:nowrap}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:var(--blue-dk);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,102,255,.25)}
+.btn-outline{border:1.5px solid var(--ink4);color:var(--ink2)}
+.btn-outline:hover{border-color:var(--ink);color:var(--ink);transform:translateY(-1px)}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:900;background:rgba(250,250,249,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid transparent;padding:16px 0;transition:border-color .2s}
+.nav-inner{display:flex;flex-direction:column;align-items:center;gap:16px}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-text{font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.logo-dot{color:var(--blue)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a:not(.btn){font-size:14px;font-weight:400;color:var(--ink3);transition:color .18s}
+.nav-links a:not(.btn):hover{color:var(--ink)}
+.nav-cta{padding:8px 16px;font-size:13px}
+
+.ham{display:none;flex-direction:column;gap:5px;padding:6px}
+.ham span{display:block;width:20px;height:1.5px;background:var(--ink);border-radius:2px;transition:.28s var(--ease)}
+.ham.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.ham.open span:nth-child(2){opacity:0}
+.ham.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+.drawer{display:none;position:fixed;inset:0;background:var(--bg);z-index:800;flex-direction:column;justify-content:center;align-items:center;gap:40px;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer.open{opacity:1;pointer-events:auto}
+.drawer a{font-family:var(--serif);font-size:32px;color:var(--ink)}
+
+@media(max-width:820px){
+  .nav{padding:12px 0}
+  .nav-inner{flex-direction:row;justify-content:space-between;height:50px;position:relative}
+  .logo{position:absolute;left:50%;transform:translateX(-50%)}
+  .nav-links{display:none}
+  .ham{display:flex;position:absolute;right:32px}
+  .drawer{display:flex}
+}
+
+.hero{padding:210px 0 100px;position:relative}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.hero-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:28px}
+.live-pip{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero-title{margin-bottom:28px}
+.hero-desc{margin-bottom:40px;max-width:440px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:56px}
+.hero-metrics{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--bg3);border-radius:var(--r);overflow:hidden}
+.metric{padding:18px 20px;border-right:1px solid var(--bg3)}
+.metric:last-child{border-right:none}
+.metric-val{font-family:var(--serif);font-size:30px;font-weight:400;color:var(--ink);margin-bottom:4px}
+.metric-lbl{font-size:12px;color:var(--ink3);line-height:1.4}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{animation:fadeUp .5s .05s var(--ease) both}
+.hero-title{animation:fadeUp .6s .12s var(--ease) both}
+.hero-desc{animation:fadeUp .6s .2s var(--ease) both}
+.hero-ctas{animation:fadeUp .6s .28s var(--ease) both}
+.hero-metrics{animation:fadeUp .6s .36s var(--ease) both}
+.hero-visual{animation:fadeUp .7s .1s var(--ease) both}
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;gap:56px}
+  .hero-visual{order:-1}
+  .hero-desc{max-width:100%}
+}
+
+.pg{background:#fff;border:1px solid var(--bg3);border-radius:14px;padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.06)}
+.pg-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.pg-live{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:500;color:var(--green);letter-spacing:.06em}
+.pg-sub{font-size:11px;color:var(--ink4)}
+.pg-grid{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(5,1fr);gap:5px;margin-bottom:18px}
+.slot{aspect-ratio:2;border-radius:5px;position:relative;cursor:pointer;transition:transform .15s var(--ease);display:flex;align-items:center;justify-content:center}
+.slot:hover{transform:scale(1.07);z-index:2}
+.slot-free{background:#DCFCE7}
+.slot-occ{background:#FEE2E2}
+.slot-res{background:#FEF9C3}
+.slot-gap{background:transparent;pointer-events:none}
+.slot-selected{outline:2px solid var(--blue);outline-offset:1px;transform:scale(1.1);z-index:3}
+.slot-num{position:absolute;bottom:2px;right:4px;font-size:8px;font-weight:500;color:rgba(0,0,0,.25)}
+.slot-car{width:65%;color:rgba(220,38,38,.5)}
+.slot-car svg{width:100%;height:auto}
+.pg-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.pg-legend{display:flex;gap:14px}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3)}
+.leg-dot{width:8px;height:8px;border-radius:2px}
+.pg-nums{display:flex;gap:16px}
+.pg-num{text-align:center}
+.pg-num-v{font-family:var(--serif);font-size:20px;font-weight:400}
+.pg-num-l{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4)}
+.visual-cap{font-size:11px;color:var(--ink4);text-align:center;margin-top:12px}
+
+.features{padding:100px 0;background:var(--bg)}
+.sec-header{margin-bottom:48px}
+.sec-header .label{margin-bottom:20px}
+.prod-split{display:grid;grid-template-columns:1.2fr 1fr;gap:64px;align-items:start}
+.prod-sticky{position:sticky;top:100px}
+.prod-mockup{background:#fff;border:1px solid var(--bg3);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.03),0 16px 48px rgba(0,0,0,.05);overflow:hidden;display:grid;grid-template-columns:180px 1fr;height:380px}
+.mock-side{background:var(--ink);color:#fff;padding:24px 18px;display:flex;flex-direction:column;gap:28px;border-right:1px solid rgba(255,255,255,.05)}
+.mock-logo{display:flex;align-items:center;gap:8px}
+.mock-logo-text{font-size:12px;font-weight:600;letter-spacing:-.01em}
+.mock-menu{display:flex;flex-direction:column;gap:6px}
+.mock-item{font-size:11px;padding:8px 12px;border-radius:6px;color:rgba(255,255,255,.4);text-align:left;transition:all .2s var(--ease)}
+.mock-item.active{color:#fff;background:rgba(255,255,255,.08)}
+.mock-body{background:#fff;padding:32px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.mock-screen{display:none;animation:mockFade .35s var(--ease) forwards}
+.mock-screen.active{display:block}
+@keyframes mockFade{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.prod-steps{display:flex;flex-direction:column;gap:8px}
+.prod-step{padding:20px 24px;border-radius:12px;border:1px solid transparent;background:transparent;text-align:left;cursor:pointer;transition:all .25s var(--ease)}
+.prod-step:hover{background:var(--bg2)}
+.prod-step.active{background:#fff;border-color:var(--bg3);box-shadow:0 4px 16px rgba(0,0,0,.02)}
+.prod-step-header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.prod-step-ico{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--ink3);transition:color .2s}
+.prod-step.active .prod-step-ico{color:var(--blue)}
+.prod-step-title{font-size:16px;font-weight:500;color:var(--ink)}
+.prod-step-desc{font-size:14px;color:var(--ink3);line-height:1.6;font-weight:300;padding-left:38px}
+@media(max-width:900px){
+  .prod-split{grid-template-columns:1fr;gap:40px}
+  .prod-sticky{position:relative;top:0}
+  .prod-mockup{height:340px}
+}
+
+.diffs{padding:100px 0;background:var(--bg2)}
+.diffs-inner{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start}
+.diffs-list{display:flex;flex-direction:column}
+.diff{padding:32px 0;border-bottom:1px solid var(--bg3);display:grid;grid-template-columns:32px 1fr;gap:20px}
+.diff:first-child{border-top:1px solid var(--bg3)}
+.diff-n{font-size:11px;font-weight:500;color:var(--ink4);padding-top:3px}
+.diff-title{font-size:16px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.diff-desc{font-size:14px;color:var(--ink3);line-height:1.7;font-weight:300}
+@media(max-width:860px){.diffs-inner{grid-template-columns:1fr;gap:52px}}
+
+.target-audience-grid{display:flex;flex-direction:column;gap:12px;margin-top:40px;max-width:800px;margin-left:auto;margin-right:auto}
+.audience-card{display:flex;align-items:center;padding:20px 28px;background:var(--bg);border:1px solid var(--bg3);border-radius:14px;transition:all .25s var(--ease);cursor:default}
+.audience-card:hover{background:var(--bg2);border-color:var(--blue);transform:translateX(4px)}
+.audience-icon{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:10px;background:var(--bg2);color:var(--blue);margin-right:20px;border:1px solid var(--bg3);flex-shrink:0;transition:all .2s var(--ease)}
+.audience-card:hover .audience-icon{background:var(--blue-bg);color:#0066FF}
+.audience-title{font-size:16px;font-weight:500;color:var(--ink)}
+
+.mv-container{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:64px;border-top:1px solid var(--bg3);padding-top:48px;max-width:1000px;margin-left:auto;margin-right:auto}
+.mv-box h3{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.mv-box h3::before{content:'';display:inline-block;width:4px;height:24px;background:var(--blue);border-radius:2px}
+.mv-box p{font-size:15px;line-height:1.6;color:var(--ink2)}
+@media(max-width:600px){
+  .target-audience-grid{grid-template-columns:1fr;border:none;gap:16px;background:transparent}
+  .audience-card{border:1px solid var(--bg3)!important;border-radius:12px;padding:32px 16px}
+  .mv-container{grid-template-columns:1fr;gap:32px}
+}
+
+.pricing-container{display:flex;gap:48px;align-items:center;margin-top:40px}
+.phone-mockup{flex:1;background:#000;border:12px solid #2C2C2E;border-radius:40px;aspect-ratio:9/16;max-width:310px;margin:0 auto;position:relative;box-shadow:0 24px 50px rgba(0,0,0,.2);overflow:hidden}
+.phone-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#0A0A0A;position:relative;padding:24px}
+.phone-notch{position:absolute;top:0;width:110px;height:18px;background:#2C2C2E;border-bottom-left-radius:12px;border-bottom-right-radius:12px;z-index:10}
+.phone-app-icon{display:flex;align-items:center;justify-content:center;width:110px;height:110px;background:#141414;border:1px solid #262626;border-radius:26px;box-shadow:0 16px 32px rgba(0,0,0,.4);animation:logoGlow 3s infinite ease-in-out}
+.phone-app-icon svg{width:64px;height:64px}
+.phone-app-title{margin-top:20px;font-size:18px;font-weight:600;color:#FAFAF9;letter-spacing:-.01em}
+.phone-app-subtitle{margin-top:6px;font-size:11px;color:#8A8A8A;text-transform:uppercase;letter-spacing:.1em}
+@keyframes logoGlow{0%,100%{transform:scale(1);box-shadow:0 16px 32px rgba(0,0,0,.4)}50%{transform:scale(1.03);box-shadow:0 16px 40px rgba(0,102,255,.15)}}
+
+.enterprise-card{flex:1;background:var(--bg);border:1px solid var(--bg3);padding:48px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.02)}
+.ent-title{font-family:var(--serif);font-size:38px;font-weight:400;margin-bottom:8px}
+.ent-subtitle{font-size:15px;color:var(--ink3);margin-bottom:24px}
+.ent-feats{margin:32px 0}
+.ent-feat{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink2);margin-bottom:16px}
+.ent-feat svg{color:var(--green);flex-shrink:0}
+@media(max-width:768px){.pricing-container{flex-direction:column;gap:32px}.enterprise-card{padding:32px;width:100%}}
+
+.contact{padding:100px 0;background:var(--bg)}
+.contact-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:80px;align-items:start}
+.contact-desc{margin-bottom:40px;max-width:440px}
+.cinfo-list{display:flex;flex-direction:column;gap:24px}
+.cinfo{display:flex;align-items:center;gap:16px}
+.cinfo-ico{font-size:24px;width:48px;height:48px;background:var(--bg2);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cinfo-lbl{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:2px}
+.cinfo-val{font-size:16px;font-weight:500;color:var(--ink)}
+.form-box{background:#fff;border:1px solid var(--bg3);border-radius:14px;padding:40px;box-shadow:0 1px 2px rgba(0,0,0,.02),0 12px 40px rgba(0,0,0,.04)}
+.form-title{font-size:24px;font-weight:600;letter-spacing:-.01em;margin-bottom:28px}
+.cform{display:flex;flex-direction:column;gap:20px}
+.form-group{display:flex;flex-direction:column;gap:8px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cform label{font-size:13px;font-weight:500;color:var(--ink2)}
+.cform input,.cform textarea{width:100%;padding:12px 16px;background:var(--bg2);border:1px solid transparent;border-radius:8px;font-family:var(--sans);font-size:14px;color:var(--ink);transition:all .2s var(--ease)}
+.cform input:focus,.cform textarea:focus{outline:none;background:#fff;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-bg)}
+.cform textarea{resize:vertical}
+.form-submit{width:100%;justify-content:center;padding:14px;font-size:15px;margin-top:8px}
+.form-ok{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
+.ok-ico{font-size:48px;margin-bottom:16px}
+.ok-h{font-size:22px;font-weight:600;margin-bottom:8px}
+.ok-p{font-size:15px;color:var(--ink3);margin-bottom:24px}
+@media(max-width:900px){.contact-inner{grid-template-columns:1fr;gap:56px}.form-box{padding:32px 24px}.frow{grid-template-columns:1fr}}
+
+footer{background:var(--ink);color:rgba(255,255,255,.55);padding:60px 0 0}
+.ft-inner{display:grid;grid-template-columns:1.8fr 1fr;gap:64px;padding-bottom:52px}
+.ft-logo-text{font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;display:block}
+.ft-tag{font-size:13px;margin-bottom:24px;display:block}
+.ft-vals{display:flex;flex-wrap:wrap;gap:7px}
+.ft-val{font-size:11px;padding:3px 11px;border-radius:999px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4)}
+.ft-cols{display:flex;gap:48px}
+.ft-col{display:flex;flex-direction:column;gap:10px}
+.ft-col h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:4px}
+.ft-col a{font-size:13.5px;color:rgba(255,255,255,.35);transition:color .18s}
+.ft-col a:hover{color:#fff}
+.ft-btm{border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;padding:20px 32px;font-size:12px}
+@media(max-width:760px){.ft-inner{grid-template-columns:1fr;gap:44px}.ft-btm{flex-direction:column;gap:6px;text-align:center}}
+
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.testimonial-card{background:var(--bg);border:1px solid var(--bg3);padding:32px;border-radius:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,.01);transition:transform .2s var(--ease),border-color .2s var(--ease)}
+.testimonial-card:hover{transform:translateY(-4px);border-color:var(--ink4)}
+.test-content{font-size:15px;line-height:1.6;color:var(--ink2);font-style:italic;margin-bottom:24px}
+.test-author{display:flex;align-items:center;gap:12px;border-top:1px solid var(--bg3);padding-top:16px}
+.test-avatar{width:40px;height:40px;border-radius:50%;background:var(--blue-bg);color:#0066FF;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px}
+.test-info-text-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.test-info-text-role{font-size:12px;color:var(--ink3)}
+@media(max-width:992px){.testimonials-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.testimonials-grid{grid-template-columns:1fr;gap:16px}}
+
+.faq-container{max-width:800px;margin:40px auto 0;display:flex;flex-direction:column;gap:16px}
+.faq-item{background:var(--bg);border:1px solid var(--bg3);border-radius:12px;overflow:hidden;transition:all .2s var(--ease)}
+.faq-item[open]{border-color:var(--blue);box-shadow:0 4px 20px rgba(0,0,0,.02)}
+.faq-item summary{padding:24px;font-size:16px;font-weight:500;color:var(--ink);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';font-size:20px;font-weight:400;color:var(--ink3);transition:transform .2s var(--ease)}
+.faq-item[open] summary::after{content:'−';color:var(--blue)}
+.faq-content{padding:0 24px 24px;font-size:15px;line-height:1.6;color:var(--ink2);border-top:1px solid transparent}
+.faq-item[open] .faq-content{border-top-color:var(--bg3);padding-top:16px}
+
+.steps-container{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:48px;position:relative}
+@media(min-width:993px){.steps-container::before{content:'';position:absolute;top:40px;left:10%;right:10%;height:2px;background:var(--bg3);z-index:1}}
+.step-card{position:relative;z-index:2;background:var(--bg);border:1px solid var(--bg3);padding:32px 24px;border-radius:16px;text-align:center;transition:all .25s var(--ease)}
+.step-card:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,102,255,.05)}
+.step-badge{display:flex;align-items:center;justify-content:center;width:48px;height:48px;background:var(--bg2);border:2px solid var(--bg3);color:var(--blue);border-radius:50%;font-size:18px;font-weight:700;margin:0 auto 20px;transition:all .25s var(--ease)}
+.step-card:hover .step-badge{background:var(--blue-bg);border-color:var(--blue);color:#0066FF}
+.step-icon{color:var(--ink3);margin-bottom:16px;display:inline-flex}
+.step-card:hover .step-icon{color:var(--blue)}
+.step-title{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.step-desc{font-size:14px;line-height:1.6;color:var(--ink2)}
+@media(max-width:992px){
+  .steps-container{grid-template-columns:1fr;gap:24px}
+  .step-card{display:flex;text-align:left;align-items:flex-start;padding:24px}
+  .step-badge{margin:0 20px 0 0;flex-shrink:0}
+  .step-icon{display:none}
+}
+
+.metrics-section{padding:80px 0;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.metrics-layout{display:flex;gap:64px;align-items:center}
+.metrics-left{flex:1;display:grid;grid-template-columns:repeat(2,1fr);gap:40px 24px}
+.metric-card{display:flex;flex-direction:column}
+.metric-number{font-family:var(--serif);font-size:56px;font-weight:400;color:var(--blue);line-height:1;margin-bottom:12px;letter-spacing:-.02em}
+.metric-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.metric-desc{font-size:13px;line-height:1.5;color:var(--ink3);max-width:200px}
+.metrics-right{flex:1;background:var(--bg);border:1px solid var(--bg3);border-radius:20px;padding:32px;box-shadow:0 16px 40px rgba(0,0,0,.02);display:flex;flex-direction:column;gap:28px}
+.chart-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3);padding-bottom:16px}
+.chart-title{font-size:14px;font-weight:600;color:var(--ink)}
+.progress-chart{display:flex;flex-direction:column;gap:14px}
+.progress-item{display:flex;flex-direction:column;gap:6px}
+.progress-info{display:flex;justify-content:space-between;font-size:12px}
+.progress-name{color:var(--ink2);font-weight:500}
+.progress-pct{color:var(--ink3)}
+.progress-track{width:100%;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .6s ease-in-out}
+@media(max-width:992px){.metrics-layout{flex-direction:column;gap:48px}.metrics-left,.metrics-right{width:100%}}
+@media(max-width:480px){.metrics-left{grid-template-columns:1fr;gap:32px}.metric-desc{max-width:280px}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner wrap">
+    <a href="#hero" class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="7" fill="var(--ink)"/>
+        <path d="M7 21V7h9.5c3.6 0 6.5 2.6 6.5 6s-2.9 6-6.5 6H11v2Z" fill="white" opacity=".9"/>
+        <path d="M11 10.5v5h4.5c1.6 0 2.8-1.1 2.8-2.5S17.1 10.5 15.5 10.5Z" fill="var(--ink)" opacity=".5"/>
+        <circle cx="15.5" cy="13" r="2.8" fill="var(--ink)"/>
+        <circle cx="15.5" cy="13" r="1.2" fill="white" opacity=".6"/>
+      </svg>
+      <span class="logo-text">Parking<span class="logo-dot">.</span>Spaces</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#produto">Produto</a></li>
+      <li><a href="#diferenciais">Diferenciais</a></li>
+      <li><a href="#publico">Público</a></li>
+      <li><a href="#planos">Planos</a></li>
+      <li><a href="#contato" class="btn btn-blue nav-cta">Fale Conosco</a></li>
+    </ul>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema" id="themeBtnDesktop">🌙</button>
+    <button class="ham" id="ham" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="drawer" id="drawer">
+  <a href="#produto" onclick="closeMenu()">Produto</a>
+  <a href="#diferenciais" onclick="closeMenu()">Diferenciais</a>
+  <a href="#publico" onclick="closeMenu()">Público</a>
+  <a href="#planos" onclick="closeMenu()">Planos</a>
+  <a href="#contato" onclick="closeMenu()" class="btn btn-blue">Fale Conosco</a>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema" id="themeBtnMobile" style="margin:20px auto 0;width:48px;height:48px;font-size:20px">🌙</button>
+</div>
+
+<section class="hero" id="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-text">
+      <div class="hero-eyebrow">
+        <span class="live-pip"></span>
+        <span class="label" style="color:var(--green);letter-spacing:.12em">Sistema ativo agora</span>
+      </div>
+      <h1 class="display hero-title">O estacionamento<br>que se <em>gerencia.</em></h1>
+      <p class="body-lg hero-desc">Visão computacional, sensores IoT e painel unificado — tudo para que gestores saibam exatamente o que está acontecendo, em tempo real.</p>
+      <div class="hero-ctas">
+        <a href="#contato" class="btn btn-blue">Solicitar demonstração</a>
+        <a href="#produto" class="btn btn-outline">Ver funcionalidades</a>
+      </div>
+      <div class="hero-metrics">
+        <div class="metric"><div class="metric-val">94%</div><div class="metric-lbl">Precisão de detecção</div></div>
+        <div class="metric"><div class="metric-val">3×</div><div class="metric-lbl">Eficiência operacional</div></div>
+        <div class="metric"><div class="metric-val">&lt;2s</div><div class="metric-lbl">Latência de resposta</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="pg">
+        <div class="pg-bar">
+          <div class="pg-live"><span class="live-pip"></span>Monitoramento ao vivo</div>
+          <span class="pg-sub">Clique em qualquer vaga</span>
+        </div>
+        <div class="pg-grid" id="pgGrid"></div>
+        <div class="pg-foot">
+          <div class="pg-legend">
+            <span class="leg-item"><span class="leg-dot" style="background:#BBF7D0"></span>Livre</span>
+            <span class="leg-item"><span class="leg-dot" style="background:#FECACA"></span>Ocupada</span>
+            <span class="leg-item"><span class="leg-dot" style="background:#FEF08A"></span>Reservada</span>
+          </div>
+          <div class="pg-nums" id="pgNums"></div>
+        </div>
+      </div>
+      <p class="visual-cap">Simulação interativa — dados atualizados automaticamente</p>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="produto">
+  <div class="wrap">
+    <div class="sec-header sr">
+      <span class="label">O Produto</span>
+      <h2 class="h2" style="max-width:520px">Hardware e software em uma plataforma única</h2>
+    </div>
+    <div class="prod-split sr">
+      <div class="prod-sticky">
+        <div class="prod-mockup">
+          <div class="mock-side">
+            <div class="mock-logo">
+              <svg width="18" height="18" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#fff"/><path d="M7 21V7h9.5c3.6 0 6.5 2.6 6.5 6s-2.9 6-6.5 6H11v2Z" fill="var(--ink)"/></svg>
+              <span class="mock-logo-text">Parking Spaces</span>
+            </div>
+            <div class="mock-menu">
+              <div class="mock-item active">Dashboard</div>
+              <div class="mock-item">Portaria LPR</div>
+              <div class="mock-item">Relatórios</div>
+              <div class="mock-item">Visão Comp.</div>
+              <div class="mock-item">Alertas</div>
+              <div class="mock-item">Modulação</div>
+            </div>
+          </div>
+          <div class="mock-body">
+            <div class="mock-screen active">
+              <div style="font-size:12px;font-weight:600;margin-bottom:12px;color:var(--ink)">Vagas ao Vivo</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px">
+                <div style="height:22px;background:#FECACA;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--red);font-weight:600">OCUP</div>
+                <div style="height:22px;background:#DCFCE7;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--green);font-weight:600">LIVR</div>
+                <div style="height:22px;background:#FECACA;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--red);font-weight:600">OCUP</div>
+                <div style="height:22px;background:#FEF9C3;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--amber);font-weight:600">RESE</div>
+                <div style="height:22px;background:#DCFCE7;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--green);font-weight:600">LIVR</div>
+                <div style="height:22px;background:#FECACA;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--red);font-weight:600">OCUP</div>
+                <div style="height:22px;background:#DCFCE7;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--green);font-weight:600">LIVR</div>
+                <div style="height:22px;background:#FEF9C3;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--amber);font-weight:600">RESE</div>
+              </div>
+              <div style="margin-top:14px;background:var(--bg2);padding:10px;border-radius:6px;font-size:11px;color:var(--ink2)">⚡ Atualizado há menos de 2s</div>
+            </div>
+            <div class="mock-screen">
+              <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--ink)">Reconhecimento Automatizado</div>
+              <div style="border:1.5px dashed var(--blue);padding:14px;border-radius:8px;text-align:center;background:var(--blue-bg)">
+                <div style="font-family:monospace;font-size:15px;font-weight:bold;letter-spacing:1px;color:var(--ink);background:#fff;padding:3px 6px;border:2px solid #000;display:inline-block;border-radius:4px;margin-bottom:8px">BRA2E19</div>
+                <div style="font-size:11px;color:var(--green);font-weight:600">✓ Cancelas Ativas</div>
+              </div>
+            </div>
+            <div class="mock-screen">
+              <div style="font-size:12px;font-weight:600;margin-bottom:12px;color:var(--ink)">Ocupação Histórica</div>
+              <div style="display:flex;align-items:flex-end;gap:12px;height:65px;padding-left:10px;border-left:1px solid var(--bg3);border-bottom:1px solid var(--bg3)">
+                <div style="width:16px;height:40%;background:var(--bg3);border-radius:2px 2px 0 0"></div>
+                <div style="width:16px;height:65%;background:var(--bg3);border-radius:2px 2px 0 0"></div>
+                <div style="width:16px;height:95%;background:var(--blue);border-radius:2px 2px 0 0"></div>
+                <div style="width:16px;height:50%;background:var(--bg3);border-radius:2px 2px 0 0"></div>
+              </div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:8px;text-align:center">Análise de pico concluída</div>
+            </div>
+            <div class="mock-screen">
+              <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--ink)">Mapeamento por IA</div>
+              <div style="position:relative;background:#ECEAE5;border-radius:8px;height:85px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+                <svg width="36" height="36" viewBox="0 0 24 12" fill="none" style="color:var(--ink2)"><rect x="1" y="3" width="22" height="7" rx="2" fill="currentColor" opacity=".45"/></svg>
+                <div style="position:absolute;inset:8px;border:1.5px solid var(--green);border-radius:4px;display:flex;align-items:flex-start;padding:2px">
+                  <span style="background:var(--green);color:#fff;font-size:7px;padding:1px 3px;border-radius:2px;font-weight:600">94% CONF</span>
+                </div>
+              </div>
+            </div>
+            <div class="mock-screen">
+              <div style="font-size:12px;font-weight:600;margin-bottom:10px;color:var(--ink)">Notificações em Lote</div>
+              <div style="border-left:3px solid var(--amber);background:#FFFBEB;padding:10px;border-radius:4px;font-size:11px;color:#92400E">
+                <strong>Alerta Integrado</strong><br>Lotação atingiu 90% no Setor Sul.
+              </div>
+            </div>
+            <div class="mock-screen">
+              <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--ink)">Expansão Imediata</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <div style="border:1px solid var(--bg3);padding:6px;border-radius:4px;font-size:10px;background:var(--bg2)">+50 Vagas</div>
+                <div style="border:1px solid var(--bg3);padding:6px;border-radius:4px;font-size:10px;background:var(--bg2)">+200 Vagas</div>
+                <div style="border:1.5px solid var(--blue);color:var(--blue);padding:6px;border-radius:4px;font-size:10px;font-weight:600;background:var(--blue-bg)">+ Novo Pátio</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="prod-steps">
+        <div class="prod-step active">
+          <div class="prod-step-header">
+            <div class="prod-step-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg></div>
+            <h3 class="prod-step-title">Monitoramento em Tempo Real</h3>
+          </div>
+          <p class="prod-step-desc">Câmeras e sensores IoT atualizam o status de cada vaga em menos de 2 segundos. Painel centralizado acessível de qualquer dispositivo.</p>
+        </div>
+        <div class="prod-step">
+          <div class="prod-step-header">
+            <div class="prod-step-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <h3 class="prod-step-title">Controle Automatizado de Acesso</h3>
+          </div>
+          <p class="prod-step-desc">Reconhecimento de placas elimina tickets físicos e reduz filas em até 80%. Entrada e saída fluem sem intervenção humana.</p>
+        </div>
+        <div class="prod-step">
+          <div class="prod-step-header">
+            <div class="prod-step-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15l3-4 4 2 3-5"/></svg></div>
+            <h3 class="prod-step-title">Relatórios e Análises</h3>
+          </div>
+          <p class="prod-step-desc">Ocupação histórica, horários de pico e rotatividade em dashboards claros. Decisões baseadas em dados, não em intuição.</p>
+        </div>
+        <div class="prod-step">
+          <div class="prod-step-header">
+            <div class="prod-step-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="6" width="16" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg></div>
+            <h3 class="prod-step-title">Visão Computacional</h3>
+          </div>
+          <p class="prod-step-desc">Algoritmos treinados com dados brasileiros — chuva, sombra, contraluz. 94% de precisão sem depender de conectividade constante.</p>
+        </div>
+        <div class="prod-step">
+          <div class="prod-step-header">
+            <div class="prod-step-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="10" r="4"/><path d="M6 21c0-4 3-7 6-7s6 3 6 7"/></svg></div>
+            <h3 class="prod-step-title">Portal do Gestor</h3>
+          </div>
+          <p class="prod-step-desc">Métricas, alertas e configurações de acesso num único painel. Notificações automáticas por WhatsApp e e-mail em eventos críticos.</p>
+        </div>
+        <div class="prod-step">
+          <div class="prod-step-header">
+            <div class="prod-step-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="14" width="4" height="6" rx="1"/><rect x="10" y="9" width="4" height="11" rx="1"/><rect x="17" y="4" width="4" height="16" rx="1"/></svg></div>
+            <h3 class="prod-step-title">Escalabilidade Modular</h3>
+          </div>
+          <p class="prod-step-desc">De 20 vagas a complexos com milhares — a arquitetura cresce com o negócio sem reconfigurar a base instalada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="diffs" id="diferenciais">
+  <div class="wrap diffs-inner">
+    <div class="sr">
+      <span class="label" style="display:block;margin-bottom:20px">Diferenciais</span>
+      <h2 class="h2" style="max-width:380px;margin-bottom:20px">Por que a Parking Spaces?</h2>
+      <p class="body" style="max-width:340px;font-size:16px;color:var(--ink2)">A gestão de estacionamentos no Brasil ainda é feita com papel, ticket e guichê. Nós mudamos isso com tecnologia que cabe no orçamento real do gestor.</p>
+    </div>
+    <div class="diffs-list">
+      <div class="diff sr"><span class="diff-n">01</span><div><p class="diff-title">Visão Computacional Própria</p><p class="diff-desc">Modelos treinados em cenários reais brasileiros. Funciona com chuva, sombra e contraluz sem depender de internet constante.</p></div></div>
+      <div class="diff sr" style="transition-delay:.08s"><span class="diff-n">02</span><div><p class="diff-title">Instalação Sem Obra</p><p class="diff-desc">Câmeras wireless plug-and-play. Um dia útil de instalação, sem quebrar piso ou alterar a infraestrutura existente.</p></div></div>
+      <div class="diff sr" style="transition-delay:.16s"><span class="diff-n">03</span><div><p class="diff-title">Retorno em até 6 Meses</p><p class="diff-desc">Menos manobristas, menos erros de cobrança, menos congestionamento interno. ROI mensurável e previsível.</p></div></div>
+      <div class="diff sr" style="transition-delay:.24s"><span class="diff-n">04</span><div><p class="diff-title">Dados que Geram Ação</p><p class="diff-desc">Gestores sabem em qual horário o estacionamento chega a 90% de lotação — e agem antes do congestionamento, não depois.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="audience" id="publico">
+  <div class="wrap">
+    <div class="sr">
+      <h2 class="h2" style="max-width:600px;margin-bottom:79px">Feito para quem gerencia fluxo constante de veículos</h2>
+    </div>
+    <div class="target-audience-grid sr">
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="audience-title">Shopping Centers</span></div>
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg></div><span class="audience-title">Universidades</span></div>
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div><span class="audience-title">Condomínios</span></div>
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div><span class="audience-title">Hospitais</span></div>
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div><span class="audience-title">Aeroportos</span></div>
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div><span class="audience-title">Empresas Privadas</span></div>
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 21H2M11 18H7v-4h4v4zm5 0h-3v-4h3v4zm1-9H7V8h10v4zm3 9V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v16h16z"/></svg></div><span class="audience-title">Centros Empresariais</span></div>
+      <div class="audience-card"><div class="audience-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg></div><span class="audience-title">Estac. Públicos</span></div>
+    </div>
+    <div class="mv-container sr">
+      <div class="mv-box"><h3>Missão</h3><p>Proporcionar soluções tecnológicas inovadoras para a gestão de estacionamentos, promovendo eficiência, segurança e a melhor experiência de mobilidade tanto para usuários quanto para administradores.</p></div>
+      <div class="mv-box"><h3>Visão</h3><p>Ser a plataforma líder em gestão inteligente de pátios e vagas no mercado nacional, expandindo a operação para a América Latina através de tecnologia de ponta e conectividade em tempo real.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona" style="padding:80px 0;background:var(--bg)">
+  <div class="wrap">
+    <div class="sr" style="text-align:center">
+      <span class="label" style="display:block;margin-bottom:16px">Tecnologia</span>
+      <h2 class="h2" style="margin-bottom:14px">Como funciona a Parking Spaces?</h2>
+      <p class="body" style="max-width:550px;margin:0 auto;color:var(--ink2)">Uma solução inteligente e sem complicações físicas, integrada diretamente ao seu espaço.</p>
+    </div>
+    <div class="steps-container sr">
+      <div class="step-card">
+        <div class="step-badge">1</div>
+        <div class="step-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <h3 class="step-title">Integração Sutil</h3>
+        <p class="step-desc">Conectamos o nosso software diretamente à rede de câmeras e circuitos de CFTV que o seu estabelecimento já possui. Zero quebra-quebra de pisos ou obras demoradas.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">2</div>
+        <div class="step-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div>
+        <h3 class="step-title">Análise por IA</h3>
+        <p class="step-desc">Nossa Inteligência Artificial baseada em Visão Computacional processa as imagens em tempo real, identificando instantaneamente a entrada, saída e o status de cada vaga.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">3</div>
+        <div class="step-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+        <h3 class="step-title">Sincronização Direta</h3>
+        <p class="step-desc">Os dados de vagas livres são enviados imediatamente para o aplicativo dos motoristas e para o dashboard do gestor. Prático, automático e em tempo real.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="depoimentos" style="padding:80px 0;background:var(--bg2)">
+  <div class="wrap">
+    <div class="sr" style="text-align:center">
+      <span class="label" style="display:block;margin-bottom:16px">Depoimentos</span>
+      <h2 class="h2" style="margin-bottom:14px">O que dizem os nossos parceiros</h2>
+      <p class="body" style="max-width:550px;margin:0 auto;color:var(--ink2)">Histórias reais de estabelecimentos que transformaram a gestão de suas vagas com a nossa tecnologia.</p>
+    </div>
+    <div class="testimonials-grid sr">
+      <div class="testimonial-card">
+        <p class="test-content">"Reduzimos o tempo de busca por vagas no nosso pátio em quase 40% nos finais de semana. O reflexo disso foi a diminuição de filas na entrada e clientes muito mais satisfeitos antes mesmo de entrarem nas lojas."</p>
+        <div class="test-author"><div class="test-avatar">RC</div><div class="test-info-text"><div class="test-info-text-name">Ricardo Camargo</div><div class="test-info-text-role">Diretor de Operações • Shopping Central</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <p class="test-content">"Gerenciar o fluxo de veículos de mais de 15 mil alunos era um desafio diário. Com o monitoramento em tempo real da Parking Spaces, otimizamos os setores e eliminamos os gargalos nos horários de pico."</p>
+        <div class="test-author"><div class="test-avatar">MA</div><div class="test-info-text"><div class="test-info-text-name">Mariana Alencar</div><div class="test-info-text-role">Prefeita do Campus • Unileste</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <p class="test-content">"A flexibilidade do projeto sob medida foi o diferencial. Eles entenderam as necessidades complexas do nosso condomínio corporativo e entregaram uma plataforma robusta e muito fácil de auditar."</p>
+        <div class="test-author"><div class="test-avatar">FH</div><div class="test-info-text"><div class="test-info-text-name">Fernando Heinen</div><div class="test-info-text-role">Gerente de Infraestrutura • Tech Tower</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding:80px 0">
+  <div class="wrap">
+    <div class="sr" style="text-align:center">
+      <span class="label" style="display:block;margin-bottom:16px">FAQ</span>
+      <h2 class="h2" style="margin-bottom:14px">Perguntas Frequentes</h2>
+      <p class="body" style="max-width:550px;margin:0 auto;color:var(--ink2)">Tudo o que você precisa saber sobre a implantação e a tecnologia da Parking Spaces.</p>
+    </div>
+    <div class="faq-container sr">
+      <details class="faq-item"><summary>O sistema exige câmeras especiais ou funciona com a minha estrutura atual?</summary><div class="faq-content">Não é necessário investir em novos equipamentos ou infraestrutura de câmeras caras. A nossa tecnologia de inteligência artificial é altamente adaptável e consegue se integrar de forma sutil à rede de CFTV/câmeras comuns que o seu estabelecimento já possui hoje, reduzindo drasticamente o custo de ativação do projeto.</div></details>
+      <details class="faq-item"><summary>Como funciona a privacidade dos motoristas em relação à LGPD?</summary><div class="faq-content">Nossa plataforma foi desenhada sob os pilares da LGPD. O processamento visual feito pela IA analisa puramente a ocupação e o status das vagas e os fluxos estatísticos. Dados sensíveis ou rostos que não possuem finalidade de gestão não são armazenados em nossos servidores.</div></details>
+      <details class="faq-item"><summary>O aplicativo funciona em estacionamentos subterrâneos ou cobertos?</summary><div class="faq-content">Perfeitamente. Ao contrário de soluções baseadas estritamente em GPS tradicional, o ecossistema da Parking Spaces mapeia o pátio físico de forma interna e digitalizada. Desde que o usuário tenha conectividade de internet celular ou o Wi-Fi do próprio estabelecimento, a atualização das vagas acontece normalmente.</div></details>
+      <details class="faq-item"><summary>Quanto tempo leva o processo de implantação do sistema?</summary><div class="faq-content">Como trabalhamos com um modelo corporativo sob medida, o prazo exato varia conforme o tamanho e a complexidade do local. No entanto, um pátio padrão de médio porte costuma estar totalmente integrado e operando em tempo real em menos de 15 dias úteis.</div></details>
+      <details class="faq-item"><summary>Como o valor do serviço é calculado?</summary><div class="faq-content">Evitamos planos engessados porque entendemos que cada estrutura física é única. Nossa precificação é personalizada de forma corporativa e calculada com base no volume de vagas a serem monitoradas, o fluxo médio de veículos e a quantidade de integrações de software necessárias para o seu negócio.</div></details>
+    </div>
+  </div>
+</section>
+
+<section class="metrics-section" id="impacto">
+  <div class="wrap">
+    <div class="metrics-layout sr">
+      <div class="metrics-left">
+        <div class="metric-card"><div class="metric-number">-40%</div><h3 class="metric-title">Tempo de Busca</h3><p class="metric-desc">Redução média no tempo gasto procurando vagas no pátio.</p></div>
+        <div class="metric-card"><div class="metric-number">100%</div><h3 class="metric-title">Aproveitamento</h3><p class="metric-desc">Integração total com a infraestrutura atual de CFTV.</p></div>
+        <div class="metric-card"><div class="metric-number">2x</div><h3 class="metric-title">Mais Fluidez</h3><p class="metric-desc">Velocidade no escoamento do tráfego interno em picos.</p></div>
+        <div class="metric-card"><div class="metric-number">0</div><h3 class="metric-title">Obras Físicas</h3><p class="metric-desc">Nenhum sensor precisa ser parafusado ou colado no chão.</p></div>
+      </div>
+      <div class="metrics-right">
+        <div class="chart-header">
+          <div><h4 class="chart-title">Métricas de Ocupação</h4><p style="font-size:11px;color:var(--ink3);margin-top:2px">Atualizado em tempo real pela IA</p></div>
+          <span style="font-size:11px;background:var(--blue-bg);color:#0066FF;padding:4px 8px;border-radius:6px;font-weight:600">Live</span>
+        </div>
+        <div class="progress-chart">
+          <p style="font-size:12px;color:var(--ink2);font-weight:500">Gargalos e Rotatividade por Setor</p>
+          <div class="progress-item"><div class="progress-info"><span class="progress-name">Setor A (Entrada Principal)</span><span class="progress-pct">94% de uso</span></div><div class="progress-track"><div class="progress-fill" style="width:94%"></div></div></div>
+          <div class="progress-item"><div class="progress-info"><span class="progress-name">Setor B (Subsolo / Coberto)</span><span class="progress-pct">62% de uso</span></div><div class="progress-track"><div class="progress-fill" style="width:62%"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="planos">
+  <div class="wrap">
+    <div class="sr">
+      <h2 class="h2" style="margin-bottom:14px">Tecnologia escalável para a sua realidade</h2>
+      <p class="body" style="font-size:16px;color:var(--ink2)">Evite planos engessados. Estruturamos a solução ideal com base no fluxo de veículos e na complexidade do seu pátio físico.</p>
+    </div>
+    <div class="pricing-container sr">
+      <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-app-icon">
+            <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#FAFAF9"/><path d="M7 21V7h9.5c3.6 0 6.5 2.6 6.5 6s-2.9 6-6.5 6H11v2Z" fill="#0A0A0A"/><path d="M11 10.5v5h4.5c1.6 0 2.8-1.1 2.8-2.5S17.1 10.5 15.5 10.5Z" fill="#FAFAF9" opacity="0.15"/><circle cx="15.5" cy="13" r="2.8" fill="#0A0A0A"/><circle cx="15.5" cy="13" r="1.2" fill="#0066FF"/></svg>
+          </div>
+          <div class="phone-app-title">Parking<span style="color:var(--blue)">.</span>Spaces</div>
+          <div class="phone-app-subtitle">Aplicativo Oficial</div>
+          <div style="position:absolute;bottom:32px;display:flex;align-items:center;gap:8px;font-size:12px;color:#8A8A8A">
+            <span style="width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block"></span>Conectado ao servidor corporativo
+          </div>
+        </div>
+      </div>
+      <div class="enterprise-card">
+        <h3 class="ent-title">Desenho Corporativo</h3>
+        <p class="ent-subtitle">Para universidades, shoppings, hospitais e redes de estacionamento.</p>
+        <div style="font-size:24px;font-family:var(--serif);color:var(--ink);border-bottom:1px solid var(--bg3);padding-bottom:16px">Orçamento Personalizado</div>
+        <ul class="ent-feats">
+          <li class="ent-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Mapeamento customizado por Visão Computacional</li>
+          <li class="ent-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Integração com Sistemas Internos (ERP / PMS)</li>
+          <li class="ent-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Câmeras e Sensores IoT de acordo com a demanda</li>
+          <li class="ent-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Acesso ilimitado ao aplicativo e painel do gestor</li>
+          <li class="ent-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Acordo de Nível de Serviço (SLA 99.9%) garantido</li>
+          <li class="ent-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Suporte técnico e Gerente de conta dedicado</li>
+        </ul>
+        <a href="#contato" class="btn btn-blue" style="width:100%;justify-content:center;padding:16px">Falar com Vendas</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contato">
+  <div class="wrap contact-inner">
+    <div class="sr">
+      <span class="label" style="display:block;margin-bottom:20px">Contato</span>
+      <h2 class="h2">Vamos transformar<br>seu estacionamento?</h2>
+      <p class="body contact-desc" style="font-size:16px;color:var(--ink2)">Fale com nossa equipe e agende uma demonstração gratuita. Respondemos em até 24 horas.</p>
+      <div class="cinfo-list">
+        <div class="cinfo"><span class="cinfo-ico">📧</span><div><div class="cinfo-lbl">E-mail</div><div class="cinfo-val">contato@parkingspaces.com.br</div></div></div>
+        <div class="cinfo"><span class="cinfo-ico">📱</span><div><div class="cinfo-lbl">WhatsApp</div><div class="cinfo-val">+55 (44) 99999-0000</div></div></div>
+        <div class="cinfo"><span class="cinfo-ico">📍</span><div><div class="cinfo-lbl">Sede</div><div class="cinfo-val">Maringá, Paraná – Brasil</div></div></div>
+      </div>
+    </div>
+    <div class="form-box sr" style="transition-delay:.15s">
+      <div id="formArea">
+        <h3 class="form-title">Demo gratuita</h3>
+        <form class="cform" onsubmit="submitForm(event)">
+          <div class="frow">
+            <div class="form-group"><label for="fn">Nome *</label><input id="fn" type="text" placeholder="Seu nome completo" required/></div>
+            <div class="form-group"><label for="fe">E-mail *</label><input id="fe" type="email" placeholder="seu@email.com" required/></div>
+          </div>
+          <div class="form-group"><label for="fo">Organização</label><input id="fo" type="text" placeholder="Nome da empresa ou instituição"/></div>
+          <div class="form-group"><label for="fm">Mensagem</label><textarea id="fm" rows="4" placeholder="Conte sobre o seu estacionamento..."></textarea></div>
+          <button type="submit" class="btn btn-blue form-submit">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Enviar
+          </button>
+        </form>
+      </div>
+      <div id="formOk" class="form-ok" style="display:none">
+        <div class="ok-ico">✅</div>
+        <h3 class="ok-h">Mensagem enviada</h3>
+        <p class="ok-p">Nossa equipe responde em até 24 horas úteis.</p>
+        <button class="btn btn-outline" style="margin-top:8px" onclick="resetForm()">Enviar outra mensagem</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap ft-inner">
+    <div>
+      <span class="ft-logo-text">Parking<span style="color:var(--blue)">.</span>Spaces</span>
+      <span class="ft-tag">Gestão Inteligente de Estacionamento</span>
+      <div class="ft-vals">
+        <span class="ft-val">Inovação</span><span class="ft-val">Segurança</span><span class="ft-val">Agilidade</span>
+        <span class="ft-val">Transparência</span><span class="ft-val">Sustentabilidade</span><span class="ft-val">Mobilidade Inteligente</span>
+      </div>
+    </div>
+    <div class="ft-cols">
+      <div class="ft-col"><h4>Produto</h4><a href="#produto">Funcionalidades</a><a href="#diferenciais">Diferenciais</a><a href="#planos">Planos</a></div>
+      <div class="ft-col"><h4>Empresa</h4><a href="#publico">Público-Alvo</a><a href="#contato">Contato</a><a href="#contato">Parcerias</a></div>
+    </div>
+  </div>
+  <div class="ft-btm"><span>© 2025 Parking Spaces. Todos os direitos reservados.</span><span>Maringá, Paraná — Brasil</span></div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').style.borderBottomColor=window.scrollY>10?'var(--bg3)':'transparent';
+});
+const ham=document.getElementById('ham'),drawer=document.getElementById('drawer');
+ham.addEventListener('click',()=>{ham.classList.toggle('open');drawer.classList.toggle('open')});
+function closeMenu(){ham.classList.remove('open');drawer.classList.remove('open')}
+
+(()=>{
+  const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('on')}),{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.sr').forEach(el=>io.observe(el));
+})();
+
+const ROWS=5,COLS=8,LANE=3,ST=['free','occ','res'];
+let slots=Array.from({length:ROWS*COLS},(_,i)=>({id:i,status:Math.random()<.54?'occ':Math.random()<.1?'res':'free'}));
+let sel=null;
+
+function render(){
+  const g=document.getElementById('pgGrid');
+  if(!g)return;
+  g.innerHTML='';
+  slots.forEach((s,i)=>{
+    const col=i%COLS;
+    if(col===LANE){const sp=document.createElement('div');sp.className='slot slot-gap';g.appendChild(sp)}
+    const el=document.createElement('div');
+    el.className=`slot slot-${s.status}${sel===s.id?' slot-selected':''}`;
+    el.innerHTML=`${s.status==='occ'?`<div class="slot-car"><svg viewBox="0 0 24 12" fill="none"><rect x="1" y="3" width="22" height="7" rx="2" fill="currentColor" opacity=".45"/><rect x="5" y="1" width="14" height="5" rx="1.5" fill="currentColor" opacity=".3"/><circle cx="6" cy="10" r="1.8" fill="currentColor" opacity=".35"/><circle cx="18" cy="10" r="1.8" fill="currentColor" opacity=".35"/></svg></div>`:''}<span class="slot-num">${i+1}</span>`;
+    el.addEventListener('click',()=>{sel=sel===s.id?null:s.id;render();renderNums()});
+    g.appendChild(el);
+  });
+}
+
+function renderNums(){
+  const free=slots.filter(s=>s.status==='free').length;
+  const occ=slots.filter(s=>s.status==='occ').length;
+  const res=slots.filter(s=>s.status==='res').length;
+  const t=document.getElementById('pgNums');
+  if(!t)return;
+  t.innerHTML=`<div class="pg-num"><div class="pg-num-v" style="color:var(--green)">${free}</div><div class="pg-num-l">Livres</div></div><div class="pg-num"><div class="pg-num-v" style="color:var(--red)">${occ}</div><div class="pg-num-l">Ocupadas</div></div><div class="pg-num"><div class="pg-num-v" style="color:var(--amber)">${res}</div><div class="pg-num-l">Reservadas</div></div>`;
+}
+render();renderNums();
+setInterval(()=>{
+  const i=Math.floor(Math.random()*slots.length);
+  const cur=slots[i].status;
+  slots[i].status=ST.filter(s=>s!==cur)[Math.floor(Math.random()*2)];
+  render();renderNums();
+},1400);
+
+const steps=document.querySelectorAll('.prod-step');
+const mockItems=document.querySelectorAll('.mock-item');
+const screens=document.querySelectorAll('.mock-screen');
+function switchProductTab(i){
+  steps.forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  mockItems.forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  screens.forEach((el,idx)=>el.classList.toggle('active',idx===i));
+}
+steps.forEach((s,i)=>{s.addEventListener('mouseenter',()=>switchProductTab(i));s.addEventListener('click',()=>switchProductTab(i))});
+
+function submitForm(e){
+  e.preventDefault();
+  document.getElementById('formArea').style.display='none';
+  document.getElementById('formOk').style.display='flex';
+}
+function resetForm(){
+  document.getElementById('formArea').style.display='block';
+  document.getElementById('formOk').style.display='none';
+  document.querySelectorAll('.cform input,.cform textarea').forEach(el=>el.value='');
+}
+
+function toggleTheme(){
+  const isDark=document.body.classList.toggle('dark');
+  const d=document.getElementById('themeBtnDesktop');
+  const m=document.getElementById('themeBtnMobile');
+  const ico=isDark?'☀️':'🌙';
+  if(d)d.innerHTML=ico;
+  if(m)m.innerHTML=ico;
+  localStorage.setItem('theme',isDark?'dark':'light');
+}
+if(localStorage.getItem('theme')==='dark'){
+  document.body.classList.add('dark');
+  const ico='☀️';
+  const d=document.getElementById('themeBtnDesktop');
+  const m=document.getElementById('themeBtnMobile');
+  if(d)d.innerHTML=ico;
+  if(m)m.innerHTML=ico;
+}
+</script>
+</body>
+</html>

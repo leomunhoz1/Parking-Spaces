@@ -1,6 +1,6 @@
 node_modules/
 dist/
-.vercel/
+.vercel
 npm-debug.log*
 .DS_Store
 *.local

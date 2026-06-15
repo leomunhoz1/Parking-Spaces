@@ -89,6 +89,49 @@ npm run test
 [check] Static site validation passed.
 ```
 
+## Deploy na Vercel
+
+- Projeto Vercel criado: `parking-spaces`.
+- Deploy de producao concluido com status `Ready`.
+- URL de producao: `https://parking-spaces.vercel.app`.
+- URL tecnica do deployment: `https://parking-spaces-fc59ozbnl-murilomoncao7-cryptos-projects.vercel.app`.
+- Verificacao HTTP: `200 OK`.
+
+### Erro de nome do projeto
+
+A primeira tentativa de deploy usou o nome inferido da pasta local (`Parking-Spaces`) e falhou porque a Vercel exige nomes de projeto em minusculo.
+
+Log:
+
+```text
+Error: Project names can be up to 100 characters long and must be lowercase.
+They can include letters, digits, and the following characters: '.', '_', '-'.
+```
+
+Resolucao:
+
+```text
+vercel projects add parking-spaces
+vercel link --yes --project parking-spaces
+```
+
+### Conexao Git na Vercel
+
+A tentativa de conectar o projeto Vercel diretamente ao repositorio GitHub falhou por permissao/acesso da conta Vercel ao repositorio.
+
+Log:
+
+```text
+Error: Failed to connect leomunhoz1/Parking-Spaces to project.
+Make sure there aren't any typos and that you have access to the repository if it's private.
+```
+
+Resolucao aplicada:
+
+- A branch `fix/vercel-deployment` foi enviada para o GitHub.
+- O deploy de producao foi realizado pela Vercel CLI a partir da branch local.
+- Para habilitar deploys automaticos por push no GitHub, a conta/organizacao correta precisa autorizar o Vercel GitHub App para `leomunhoz1/Parking-Spaces` no dashboard da Vercel.
+
 ## Instrucoes para futuros deploys
 
 1. Alterar os arquivos do site, principalmente `index.html`.
@@ -97,4 +140,5 @@ npm run test
 4. Rodar `npm run lint`.
 5. Rodar `npm run test`.
 6. Fazer commit e push.
-7. A Vercel fara novo deploy automaticamente quando a branch conectada receber push.
+7. Enquanto a conexao Git nao estiver autorizada na Vercel, publicar com `vercel --prod`.
+8. Depois que o Vercel GitHub App for autorizado para o repositorio, a Vercel fara novo deploy automaticamente quando a branch conectada receber push.
